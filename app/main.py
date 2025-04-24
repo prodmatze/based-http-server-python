@@ -41,7 +41,7 @@ def handle_request(client_socket, client_address):
                 response = build_response(content_type, user_agent)
             case "files":
                 content_type = "application/octet-stream"
-                if (os.path.join(files_path, sub_urls[1]), "r") in files_list:
+                if sub_urls[1] in files_list:
                     content = open(os.path.join(files_path, sub_urls[1]), "r").read()
                     response = build_response(content_type, content)
                 else:
