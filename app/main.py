@@ -4,12 +4,18 @@ import socket  # noqa: F401
 response_200 = b"HTTP/1.1 200 OK\r\n\r\n"
 response_404 = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
-def build_echo_response(content):
+def build_response(content):
     content_length = len(content)
 
-    response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {content_length}\r\n\r\n{content}".encode("utf-8")
+    return (
+        f"HTTP/1.1 200 OK\r\n"
+        f"Content-Type: text/plain\r\n"
+        f"Content-Length: {content_length}"
+        f"\r\n\r\n{content}"
+    )
 
-    return response
+
+
 
 def main():
 
@@ -26,14 +32,15 @@ def main():
 
     response = None
 
-    print(f"Sub urls: {sub_urls}")
-
     if sub_urls:
         match sub_urls[0]:
             case "/" :
                 response = response_200
             case "echo":
-                response = build_echo_response(sub_urls[1])
+                response = build_response(sub_urls[1])
+            case "user-agent":
+                user_agent = get_header_value_from_request(req_msg, "User-Agent:")
+                response = build_response(user_agent)
             case _ :
                 response = response_404
     
@@ -42,11 +49,10 @@ def main():
     else:
         response = response_404
 
+    get_header_value_from_request(req_msg, "Host:")
+
     client_socket.send(response)
         
-
-    
-
 #GET requests
 def get_url_from_get_request(request):
     request_string = request.decode("utf-8")
@@ -64,9 +70,15 @@ def get_sub_urls(url):
     endpoints = [e for e in url.split("/") if e]
     return endpoints
 
+def get_header_value_from_request(request, header_key):
+    request_string = request.decode("utf-8")
 
+    request_string_split_0 = request_string.split(header_key)[1].strip()
+    request_string_split_1 = request_string_split_0.split(" ")
+    extracted_info = request_string_split_1[0].strip()
 
-
+    print(f"EXTRACTED INFO: {extracted_info}")
+    return extracted_info
 
 if __name__ == "__main__":
     main()
