@@ -37,6 +37,8 @@ def main():
             case _ :
                 response = response_404
     
+    elif url == "/":
+        response = response_200
     else:
         response = response_404
 
