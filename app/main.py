@@ -5,8 +5,11 @@ import os.path
 
 # files_path = "/tmp/"
 # files_list = os.listdir(files_path)
-files_path = "/tmp/data/codecrafters.io/http-server-tester/"
-files_list = os.listdir(files_path)
+try:
+    files_path = "/tmp/data/codecrafters.io/http-server-tester/"
+    files_list = os.listdir(files_path)
+except FileNotFoundError:
+    print("dont need the files here lol")
 
 response_200 = b"HTTP/1.1 200 OK\r\n\r\n"
 response_404 = b"HTTP/1.1 404 Not Found\r\n\r\n"
