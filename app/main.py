@@ -87,7 +87,7 @@ def get_header_value_from_request(request, header_key):
 
     for line in request_string.split("\r\n"):
         if line.startswith(header_key):
-            header_value = line.split(header_key)[1].split()
+            header_value = line.split(header_key)[1].strip()
 
             return header_value
         else:
