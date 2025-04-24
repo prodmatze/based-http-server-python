@@ -28,13 +28,17 @@ def main():
 
     print(f"Sub urls: {sub_urls}")
 
-    match sub_urls[0]:
-        case "/" :
-            response = response_200
-        case "echo":
-            response = build_echo_response(sub_urls[1])
-        case _ :
-            response = response_404
+    if sub_urls:
+        match sub_urls[0]:
+            case "/" :
+                response = response_200
+            case "echo":
+                response = build_echo_response(sub_urls[1])
+            case _ :
+                response = response_404
+    
+    else:
+        response = response_404
 
     client_socket.send(response)
         
