@@ -100,7 +100,7 @@ def main():
 #GET requests
 def get_url_from_get_request(request):
     request_string = request.decode("utf-8")
-    request_string_split_0 = request_string.split("GET")
+    request_string_split_0 = request_string.split(" ", 1)
 
     request_string_split_1 = request_string_split_0[1].split("HTTP/1.1")
 
