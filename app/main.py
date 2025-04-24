@@ -1,9 +1,10 @@
 import socket  # noqa: F401
 import threading
 import os
+import os.path
 
-files_path = "/tmp/"
-files_list = os.listdir(files_path)
+# files_path = "/tmp/"
+# files_list = os.listdir(files_path)
 
 response_200 = b"HTTP/1.1 200 OK\r\n\r\n"
 response_404 = b"HTTP/1.1 404 Not Found\r\n\r\n"
@@ -41,8 +42,8 @@ def handle_request(client_socket, client_address):
                 response = build_response(content_type, user_agent)
             case "files":
                 content_type = "application/octet-stream"
-                if sub_urls[1] in files_list:
-                    content = open(os.path.join(files_path, sub_urls[1]), "r").read()
+                if os.path.isfile(sub_urls[1]):
+                    content = open(f"/tmp/{sub_urls[1]}", "r").read()
                     response = build_response(content_type, content)
                 else:
                     response = response_404
