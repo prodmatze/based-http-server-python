@@ -5,7 +5,7 @@ response_200 = b"HTTP/1.1 200 OK\r\n\r\n"
 response_404 = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
 def build_echo_response(content):
-    content_length = content.length()
+    content_length = len(content)
 
     response = f"HTTP/1.1 200 OK \r\n Content-Type: text/plain \r\n Content-Length:{content_length} \r\n \r\n {content}".encode("utf-8")
 
@@ -25,6 +25,8 @@ def main():
     sub_urls = get_sub_urls(url)
 
     response = None
+
+    print(f"Sub urls: {sub_urls}")
 
     match sub_urls[0]:
         case "/" :
@@ -53,7 +55,7 @@ def get_url_from_get_request(request):
     return url
 
 def get_sub_urls(url):
-    endpoints = url.split("/")
+    endpoints = [e for e in url.split("/") if e]
     return endpoints
 
 
