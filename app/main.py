@@ -42,7 +42,7 @@ def handle_request(client_socket, client_address):
         response = response_404
 
     print(f"SENDING RESPONSE: {response}")
-    client_socket.send(response)
+    client_socket.send(b"HTTP1.1")
 
 
 def main():
