@@ -14,6 +14,8 @@ except FileNotFoundError:
 response_200 = b"HTTP/1.1 200 OK\r\n\r\n"
 response_404 = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
+response_201 = b"HTTP/1.1 201 Created\r\n\r\n"
+
 def build_response(content_type, content):
     content_length = len(content)
 
@@ -29,37 +31,50 @@ def handle_request(client_socket, client_address):
     req_msg = client_socket.recv(1024)
     print(f"Client sent req_msg: {req_msg}")
 
+    request_method = get_request_method(req_msg)
+    request_body = get_request_body(req_msg)
+
+    print(f"REQUEST TYPE: {request_method}")
+
     url = get_url_from_get_request(req_msg)
     sub_urls = get_sub_urls(url)
 
     response = None
 
-    if sub_urls:
-        match sub_urls[0]:
-            case "/" :
+    match request_method:
+        case "GET":
+            if sub_urls:
+                match sub_urls[0]:
+                    case "/" :
+                        response = response_200
+                    case "echo":
+                        content_type = "text/plain"
+                        response = build_response(content_type, sub_urls[1])
+                    case "user-agent":
+                        content_type = "text/plain"
+                        user_agent = get_header_value_from_request(req_msg, "User-Agent:")
+                        response = build_response(content_type, user_agent)
+                    case "files":
+                        content_type = "application/octet-stream"
+                        file_name = os.path.basename(sub_urls[1])
+                        if file_name in files_list:
+                            content = open(os.path.join(files_path, file_name), "r").read()
+                            response = build_response(content_type, content)
+                        else:
+                            response = response_404
+                    case _ :
+                        response = response_404
+            
+            elif url == "/":
                 response = response_200
-            case "echo":
-                content_type = "text/plain"
-                response = build_response(content_type, sub_urls[1])
-            case "user-agent":
-                content_type = "text/plain"
-                user_agent = get_header_value_from_request(req_msg, "User-Agent:")
-                response = build_response(content_type, user_agent)
-            case "files":
-                content_type = "application/octet-stream"
-                file_name = os.path.basename(sub_urls[1])
-                if file_name in files_list:
-                    content = open(os.path.join(files_path, file_name), "r").read()
-                    response = build_response(content_type, content)
-                else:
-                    response = response_404
-            case _ :
+            else:
                 response = response_404
-    
-    elif url == "/":
-        response = response_200
-    else:
-        response = response_404
+        case "POST":
+            if sub_urls:
+                match sub_urls[0]:
+                    case "files":
+                        open(sub_urls[1], "w").write(request_body)
+                        response = response_201
 
     print(f"SENDING RESPONSE: {response}")
     client_socket.send(response)
@@ -111,6 +126,25 @@ def get_header_value_from_request(request, header_key):
             return header_value
 
     return "ERROR"
+
+def get_request_method(request):
+    request_string = request.decode("utf-8")
+    request_method = request_string.split(" ", 1)[0].strip()
+
+    return request_method
+
+def get_request_body(request):
+    request_string = request.decode("utf-8")
+    request_body = request_string.split("\r\n")[-1].strip()
+
+    return request_body
+
+
+    
+
+
+
+
 
 if __name__ == "__main__":
     main()
