@@ -7,7 +7,7 @@ response_404 = b"HTTP/1.1 404 Not Found\r\n\r\n"
 def build_echo_response(content):
     content_length = len(content)
 
-    response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n Content-Length: {content_length}\r\n\r\n {content}".encode("utf-8")
+    response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {content_length}\r\n\r\n {content}".encode("utf-8")
 
     return response
 
