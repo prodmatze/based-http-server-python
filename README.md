@@ -14,7 +14,3 @@ A minimalist HTTP/1.1 server written from scratch in Python using raw TCP socket
 - Manual HTTP parsing
 - Working with raw bytes and string decoding
 - Implementing concurrency with Python's threading module
-
----
-
-This is part of my cybersecurity and systems programming learning journey.
