@@ -73,7 +73,8 @@ def handle_request(client_socket, client_address):
             if sub_urls:
                 match sub_urls[0]:
                     case "files":
-                        open(sub_urls[1], "w").write(request_body)
+                        file_name = os.path.basename(sub_urls[1])
+                        open(os.path.join(files_path, file_name), "w").write(request_body)
                         response = response_201
 
     print(f"SENDING RESPONSE: {response}")
