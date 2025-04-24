@@ -12,7 +12,7 @@ def build_response(content):
         f"Content-Type: text/plain\r\n"
         f"Content-Length: {content_length}"
         f"\r\n\r\n{content}"
-    )
+    ).encode("utf-8")
 
 
 
