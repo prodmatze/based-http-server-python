@@ -41,11 +41,9 @@ def handle_request(client_socket, client_address):
     else:
         response = response_404
 
+    print(f"SENDING RESPONSE: {response}")
     client_socket.send(response)
 
-    client_socket.close()
-
-    return None
 
 def main():
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
