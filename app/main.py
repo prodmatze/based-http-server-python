@@ -90,9 +90,8 @@ def get_header_value_from_request(request, header_key):
             header_value = line.split(header_key, 1)[1].strip()
 
             return header_value
-        else:
-            return "ERROR"
 
+    return "ERROR"
 
 if __name__ == "__main__":
     main()
