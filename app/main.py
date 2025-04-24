@@ -1,4 +1,5 @@
 import socket  # noqa: F401
+import threading
 
 
 response_200 = b"HTTP/1.1 200 OK\r\n\r\n"
@@ -42,7 +43,8 @@ def handle_request(client_socket, client_address):
         response = response_404
 
     print(f"SENDING RESPONSE: {response}")
-    client_socket.send(b"HTTP1.1")
+    client_socket.send(response)
+    client_socket.close()
 
 
 def main():
@@ -52,7 +54,13 @@ def main():
         client_socket, client_address = server_socket.accept()
         print(f"Incoming connection from client adress: {client_address}")
 
-        handle_request(client_socket, client_address)
+        thread = threading.Thread(
+            target = handle_request,
+            args = (client_socket, client_address),
+            daemon = True
+        )
+
+        thread.start()
 
         
 #GET requests
@@ -75,9 +83,13 @@ def get_sub_urls(url):
 def get_header_value_from_request(request, header_key):
     request_string = request.decode("utf-8")
 
+    header_value = None
+
     for line in request_string.split("\r\n"):
         if line.startswith(header_key):
-            return line.split(header_key)[1].split()
+            header_value = line.split(header_key)[1].split()
+
+            return header_value
         else:
             return "ERROR"
 
