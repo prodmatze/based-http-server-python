@@ -1,16 +1,19 @@
 import socket  # noqa: F401
 import threading
+import os
 
+files_path = "/tmp/"
+files_list = os.listdir(files_path)
 
 response_200 = b"HTTP/1.1 200 OK\r\n\r\n"
 response_404 = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
-def build_response(content):
+def build_response(content_type, content):
     content_length = len(content)
 
     return (
         f"HTTP/1.1 200 OK\r\n"
-        f"Content-Type: text/plain\r\n"
+        f"Content-Type: {content_type}\r\n"
         f"Content-Length: {content_length}"
         f"\r\n\r\n{content}"
     ).encode("utf-8")
@@ -30,10 +33,19 @@ def handle_request(client_socket, client_address):
             case "/" :
                 response = response_200
             case "echo":
-                response = build_response(sub_urls[1])
+                content_type = "text/plain"
+                response = build_response(content_type, sub_urls[1])
             case "user-agent":
+                content_type = "text/plain"
                 user_agent = get_header_value_from_request(req_msg, "User-Agent:")
-                response = build_response(user_agent)
+                response = build_response(content_type, user_agent)
+            case "files":
+                content_type = "application/octet-stream"
+                if (os.path.join(files_path, sub_urls[1]), "r") in files_list:
+                    content = open(os.path.join(files_path, sub_urls[1]), "r").read()
+                    response = build_response(content_type, content)
+                else:
+                    response = response_404
             case _ :
                 response = response_404
     
