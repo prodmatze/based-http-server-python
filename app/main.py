@@ -2,7 +2,7 @@ import socket  # noqa: F401
 
 
 response_200 = b"HTTP/1.1 200 OK\r\n\r\n"
-response_400 = b"HTTP/1.1 404 Not found\r\n\r\n"
+response_400 = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
 
 def main():
