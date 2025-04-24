@@ -86,6 +86,7 @@ def main():
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
 
     while True:
+        # accept incoming TCP connection from a client
         client_socket, client_address = server_socket.accept()
         print(f"Incoming connection from client adress: {client_address}")
 

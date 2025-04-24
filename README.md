@@ -1,37 +1,20 @@
-[![progress-banner](https://backend.codecrafters.io/progress/http-server/55abe4d6-f80e-4e2c-8fe2-5568c53f8afe)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# Based HTTP Server (Python)
 
-This is a starting point for Python solutions to the
-["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview).
+A minimalist HTTP/1.1 server written from scratch in Python using raw TCP sockets — built as part of the Codecrafters challenge.
 
-[HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) is the
-protocol that powers the web. In this challenge, you'll build a HTTP/1.1 server
-that is capable of serving multiple clients.
+## Features
+- Accepts TCP connections on port 4221
+- Parses raw HTTP GET requests
+- Handles `/`, `/echo/<msg>`, and `/user-agent`
+- Returns appropriate HTTP response codes
+- Supports concurrent connections using threads
 
-Along the way you'll learn about TCP servers,
-[HTTP request syntax](https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html),
-and more.
+## Learning Highlights
+- Low-level socket programming
+- Manual HTTP parsing
+- Working with raw bytes and string decoding
+- Implementing concurrency with Python's threading module
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+---
 
-# Passing the first stage
-
-The entry point for your HTTP server implementation is in `app/main.py`. Study
-and uncomment the relevant code, and push your changes to pass the first stage:
-
-```sh
-git commit -am "pass 1st stage" # any msg
-git push origin master
-```
-
-Time to move on to the next stage!
-
-# Stage 2 & beyond
-
-Note: This section is for stages 2 and beyond.
-
-1. Ensure you have `python (3.13)` installed locally
-1. Run `./your_program.sh` to run your program, which is implemented in
-   `app/main.py`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
+This is part of my cybersecurity and systems programming learning journey.
