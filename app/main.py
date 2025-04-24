@@ -21,37 +21,38 @@ def main():
 
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
 
-    client_socket, client_address = server_socket.accept()
-    print(f"Incoming connection from client adress: {client_address}")
+    while True:
+        client_socket, client_address = server_socket.accept()
+        print(f"Incoming connection from client adress: {client_address}")
 
-    req_msg = client_socket.recv(1024)
-    print(f"Client sent req_msg: {req_msg}")
+        req_msg = client_socket.recv(1024)
+        print(f"Client sent req_msg: {req_msg}")
 
-    url = get_url_from_get_request(req_msg)
-    sub_urls = get_sub_urls(url)
+        url = get_url_from_get_request(req_msg)
+        sub_urls = get_sub_urls(url)
 
-    response = None
+        response = None
 
-    if sub_urls:
-        match sub_urls[0]:
-            case "/" :
-                response = response_200
-            case "echo":
-                response = build_response(sub_urls[1])
-            case "user-agent":
-                user_agent = get_header_value_from_request(req_msg, "User-Agent:")
-                response = build_response(user_agent)
-            case _ :
-                response = response_404
-    
-    elif url == "/":
-        response = response_200
-    else:
-        response = response_404
+        if sub_urls:
+            match sub_urls[0]:
+                case "/" :
+                    response = response_200
+                case "echo":
+                    response = build_response(sub_urls[1])
+                case "user-agent":
+                    user_agent = get_header_value_from_request(req_msg, "User-Agent:")
+                    response = build_response(user_agent)
+                case _ :
+                    response = response_404
+        
+        elif url == "/":
+            response = response_200
+        else:
+            response = response_404
 
-    get_header_value_from_request(req_msg, "Host:")
+        get_header_value_from_request(req_msg, "Host:")
 
-    client_socket.send(response)
+        client_socket.send(response)
         
 #GET requests
 def get_url_from_get_request(request):
