@@ -22,7 +22,7 @@ def build_response_200(content_type, content, encoding = None):
 
     encoding_line = "\r\n"
     if encoding:
-        encoding_line = f"Content-Encoding: {encoding}\r\n"
+        encoding_line = f"\r\nContent-Encoding: {encoding}\r\n"
 
 
     return (
