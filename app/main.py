@@ -21,13 +21,14 @@ def build_response_200(content_type, content, encoding = None):
     content_length = len(content)
 
     encoding_line = "\r\n"
-    if encoding:
-        encoding_line = f"Content-Type: {content_type}\r\n"
+    if encoding is not None:
+        encoding_line = f"Content-Encoding: {encoding}\r\n"
+
 
     return (
-        f"HTTP/1.1 200 OK"
+        f"HTTP/1.1 200 OK\r\n"
         f"{encoding_line}"
-        f"Content-Encoding: {encoding}\r\n"
+        f"Content-Type: {content_type}\r\n"
         f"Content-Length: {content_length}"
         f"\r\n\r\n{content}"
     ).encode("utf-8")
