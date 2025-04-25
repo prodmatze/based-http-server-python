@@ -3,25 +3,31 @@ import threading
 import os
 import os.path
 
-# files_path = "/tmp/"
-# files_list = os.listdir(files_path)
 try:
     files_path = "/tmp/data/codecrafters.io/http-server-tester/"
     files_list = os.listdir(files_path)
 except FileNotFoundError:
     print("dont need the files here lol")
 
-response_200 = b"HTTP/1.1 200 OK\r\n\r\n"
-response_404 = b"HTTP/1.1 404 Not Found\r\n\r\n"
+accepted_encodings = {"gzip": "gzip"}
 
+response_200 = b"HTTP/1.1 200 OK\r\n\r\n"
 response_201 = b"HTTP/1.1 201 Created\r\n\r\n"
 
-def build_response(content_type, content):
+response_404 = b"HTTP/1.1 404 Not Found\r\n\r\n"
+
+
+def build_response_200(content_type, content, encoding = None):
     content_length = len(content)
 
+    encoding_line = "\r\n"
+    if encoding:
+        encoding_line = f"Content-Type: {content_type}\r\n"
+
     return (
-        f"HTTP/1.1 200 OK\r\n"
-        f"Content-Type: {content_type}\r\n"
+        f"HTTP/1.1 200 OK"
+        f"{encoding_line}"
+        f"Content-Encoding: {encoding}\r\n"
         f"Content-Length: {content_length}"
         f"\r\n\r\n{content}"
     ).encode("utf-8")
@@ -49,17 +55,19 @@ def handle_request(client_socket, client_address):
                         response = response_200
                     case "echo":
                         content_type = "text/plain"
-                        response = build_response(content_type, sub_urls[1])
+                        accepted_encoding = get_header_value_from_request(req_msg, "Accept-Encoding")
+                        encoding = accepted_encodings.get("accepted_encoding", None) if accepted_encoding else None
+                        response = build_response_200(content_type, sub_urls[1])
                     case "user-agent":
                         content_type = "text/plain"
                         user_agent = get_header_value_from_request(req_msg, "User-Agent:")
-                        response = build_response(content_type, user_agent)
+                        response = build_response_200(content_type, user_agent)
                     case "files":
                         content_type = "application/octet-stream"
                         file_name = os.path.basename(sub_urls[1])
                         if file_name in files_list:
                             content = open(os.path.join(files_path, file_name), "r").read()
-                            response = build_response(content_type, content)
+                            response = build_response_200(content_type, content)
                         else:
                             response = response_404
                     case _ :
@@ -99,7 +107,6 @@ def main():
         thread.start()
 
         
-#GET requests
 def get_url_from_get_request(request):
     request_string = request.decode("utf-8")
     request_string_split_0 = request_string.split(" ", 1)
@@ -107,9 +114,8 @@ def get_url_from_get_request(request):
     request_string_split_1 = request_string_split_0[1].split("HTTP/1.1")
 
     url = request_string_split_1[0].strip()
-
     print(f"Extracted URL: {url} from request!")
-
+    
     return url
 
 def get_sub_urls(url):
@@ -120,14 +126,13 @@ def get_header_value_from_request(request, header_key):
     request_string = request.decode("utf-8")
 
     header_value = None
-
     for line in request_string.split("\r\n"):
         if line.startswith(header_key):
             header_value = line.split(header_key, 1)[1].strip()
 
             return header_value
 
-    return "ERROR"
+    return None
 
 def get_request_method(request):
     request_string = request.decode("utf-8")
