@@ -10,7 +10,7 @@ try:
 except FileNotFoundError:
     print("dont need the files here lol")
 
-accepted_encodings_dict = {"gzip": "gzip"}
+accepted_encodings_list = ["gzip"]
 
 response_200 = b"HTTP/1.1 200 OK\r\n\r\n"
 response_201 = b"HTTP/1.1 201 Created\r\n\r\n"
@@ -153,7 +153,7 @@ def pick_encoding(accepted_encodings_string):
     available_encodings = []
 
     for encoding in accepted_encodings:
-        if encoding in accepted_encodings_dict.values:
+        if encoding in accepted_encodings_list:
             available_encodings.append(encoding)
 
     encoding = random.choice(available_encodings) if available_encodings else None
