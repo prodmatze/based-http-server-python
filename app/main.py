@@ -2,6 +2,7 @@ import socket  # noqa: F401
 import threading
 import os
 import os.path
+import random
 
 try:
     files_path = "/tmp/data/codecrafters.io/http-server-tester/"
@@ -9,7 +10,7 @@ try:
 except FileNotFoundError:
     print("dont need the files here lol")
 
-accepted_encodings = {"gzip": "gzip"}
+accepted_encodings_dict = {"gzip": "gzip"}
 
 response_200 = b"HTTP/1.1 200 OK\r\n\r\n"
 response_201 = b"HTTP/1.1 201 Created\r\n\r\n"
@@ -56,8 +57,8 @@ def handle_request(client_socket, client_address):
                         response = response_200
                     case "echo":
                         content_type = "text/plain"
-                        accepted_encoding = get_header_value_from_request(req_msg, "Accept-Encoding:")
-                        encoding = accepted_encodings.get(accepted_encoding, None) if accepted_encoding else None
+                        accepted_encoding_string = get_header_value_from_request(req_msg, "Accept-Encoding:")
+                        encoding = pick_encoding(accepted_encoding_string)
                         response = build_response_200(content_type, sub_urls[1], encoding)
                     case "user-agent":
                         content_type = "text/plain"
@@ -147,13 +148,18 @@ def get_request_body(request):
 
     return request_body
 
+def pick_encoding(accepted_encodings_string):
+    accepted_encodings = accepted_encodings_string.split(", ")
+    available_encodings = []
 
-    
+    for encoding in accepted_encodings:
+        if encoding in accepted_encodings_dict.values:
+            available_encodings.append(encoding)
 
+    encoding = random.choice(available_encodings) if available_encodings else None
 
-
+    return encoding
 
 
 if __name__ == "__main__":
     main()
-
