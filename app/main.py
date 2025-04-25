@@ -58,7 +58,7 @@ def handle_request(client_socket, client_address):
                     case "echo":
                         content_type = "text/plain"
                         accepted_encoding_string = get_header_value_from_request(req_msg, "Accept-Encoding:")
-                        encoding = pick_encoding(accepted_encoding_string)
+                        encoding = pick_encoding(accepted_encoding_string) if accepted_encoding_string else None
                         response = build_response_200(content_type, sub_urls[1], encoding)
                     case "user-agent":
                         content_type = "text/plain"
