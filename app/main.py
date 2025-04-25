@@ -21,7 +21,7 @@ def build_response_200(content_type, content, encoding = None):
     content_length = len(content)
 
     encoding_line = "\r\n"
-    if encoding is not None:
+    if encoding:
         encoding_line = f"Content-Encoding: {encoding}\r\n"
 
 
@@ -58,7 +58,7 @@ def handle_request(client_socket, client_address):
                         content_type = "text/plain"
                         accepted_encoding = get_header_value_from_request(req_msg, "Accept-Encoding")
                         encoding = accepted_encodings.get("accepted_encoding", None) if accepted_encoding else None
-                        response = build_response_200(content_type, sub_urls[1])
+                        response = build_response_200(content_type, sub_urls[1], encoding)
                     case "user-agent":
                         content_type = "text/plain"
                         user_agent = get_header_value_from_request(req_msg, "User-Agent:")
