@@ -26,7 +26,7 @@ def build_response_200(content_type, content, encoding = None):
 
 
     return (
-        f"HTTP/1.1 200 OK\r\n"
+        f"HTTP/1.1 200 OK"
         f"{encoding_line}"
         f"Content-Type: {content_type}\r\n"
         f"Content-Length: {content_length}"
