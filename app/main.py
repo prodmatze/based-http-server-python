@@ -139,6 +139,5 @@ def pick_encoding(accepted_encodings_string):
 
     return encoding
 
-
 if __name__ == "__main__":
     main()
