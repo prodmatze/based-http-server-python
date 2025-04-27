@@ -71,10 +71,9 @@ def handle_request(client_socket, client_address):
         req_body = request.body
 
         req_accepted_encodings = request.headers.get("Accept-Encoding", None)
-        encoding = pick_encoding(req_accepted_encodings)
+        encoding = pick_encoding(req_accepted_encodings) if req_accepted_encodings else None
 
         req_connection = request.headers.get("Connection", None)
-
 
         response = None
 
