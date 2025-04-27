@@ -28,7 +28,7 @@ def build_response_200(content_type, content, encoding = None):
     content_length = len(content)
 
     headers = (
-        f"HTTP/1.1 200 OK"
+        f"HTTP/1.1 200 OK\r\n"
         f"Content-Type: {content_type}\r\n"
         f"Content-Length: {content_length}\r\n"
     )
