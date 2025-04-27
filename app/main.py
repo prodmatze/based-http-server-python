@@ -5,7 +5,7 @@ import os.path
 import random
 import gzip
 
-from request_parser import Request
+from app.request_parser import Request
 
 files_path = "/tmp/data/codecrafters.io/http-server-tester/"
 
