@@ -86,7 +86,7 @@ def handle_request(client_socket, client_address):
                             content_type = "text/plain"
                             accepted_encoding_string = req_headers.get("Accept-Encoding", None)
                             encoding = pick_encoding(accepted_encoding_string) if accepted_encoding_string else None
-                            response = build_response_200(content_type, req_sub_urls[1], req_connection, req_connection)
+                            response = build_response_200(content_type, req_sub_urls[1], req_encoding, req_connection)
                         case "user-agent":
                             content_type = "text/plain"
                             user_agent = req_headers.get("User-Agent", None)
