@@ -6,6 +6,7 @@ import random
 import gzip
 
 from app.request_parser import Request
+#from request_parser import Request
 
 files_path = "/tmp/data/codecrafters.io/http-server-tester/"
 
@@ -78,6 +79,8 @@ def handle_request(client_socket, client_address):
                     case "user-agent":
                         content_type = "text/plain"
                         user_agent = req_headers.get("User-Agent", None)
+                        print(f"found user agent: {user_agent}")
+                        print(f"ALL HEADERS: {req_headers}")
                         response = build_response_200(content_type, user_agent)
                     case "files":
                         content_type = "application/octet-stream"
