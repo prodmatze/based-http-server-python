@@ -10,6 +10,9 @@ from app.request_parser import Request
 
 files_path = "/tmp/data/codecrafters.io/http-server-tester/"
 
+REC_BUFFER_SIZE = 1024
+PORT = 4221
+
 accepted_encodings_list = ["gzip"]
 
 response_200 = b"HTTP/1.1 200 OK\r\n\r\n"
@@ -52,7 +55,7 @@ def handle_request(client_socket, client_address):
         print("who needs files anyways:")
 
     while True:
-        req_msg = client_socket.recv(1024)
+        req_msg = client_socket.recv(REC_BUFFER_SIZE)
 
         if not req_msg:
             break
@@ -85,8 +88,6 @@ def handle_request(client_socket, client_address):
                             response = response_200
                         case "echo":
                             content_type = "text/plain"
-                            accepted_encoding_string = req_headers.get("Accept-Encoding", None)
-                            encoding = pick_encoding(accepted_encoding_string) if accepted_encoding_string else None
                             response = build_response_200(content_type, req_sub_urls[1], encoding, req_connection)
                         case "user-agent":
                             content_type = "text/plain"
@@ -129,7 +130,7 @@ def handle_request(client_socket, client_address):
 
 
 def main():
-    server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
+    server_socket = socket.create_server(("localhost", PORT), reuse_port=True)
 
     while True:
         # accept incoming TCP connection from a client
