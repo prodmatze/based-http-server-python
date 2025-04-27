@@ -54,69 +54,71 @@ def handle_request(client_socket, client_address):
         if not req_msg:
             break
 
-    print(f"Client sent req_msg: {req_msg}")
+        print(f"Client sent req_msg: {req_msg}")
 
-    request = Request(req_msg) #parsed request object
+        request = Request(req_msg) #parsed request object
 
-    print(f"REQUEST TYPE: {request.method}")
+        print(f"REQUEST TYPE: {request.method}")
 
-    req_method = request.method
-    req_url = request.url
-    req_sub_urls = request.sub_urls
-    req_headers = request.headers
+        req_method = request.method
+        req_url = request.url
+        req_sub_urls = request.sub_urls
+        req_headers = request.headers
 
-    req_body = request.body
+        req_body = request.body
 
 
-    response = None
+        response = None
 
-    match req_method:
-        case "GET":
-            if req_sub_urls:
-                match req_sub_urls[0]:
-                    case "/" :
-                        response = response_200
-                    case "echo":
-                        content_type = "text/plain"
-                        accepted_encoding_string = req_headers.get("Accept-Encoding", None)
-                        encoding = pick_encoding(accepted_encoding_string) if accepted_encoding_string else None
-                        response = build_response_200(content_type, req_sub_urls[1], encoding)
-                    case "user-agent":
-                        content_type = "text/plain"
-                        user_agent = req_headers.get("User-Agent", None)
-                        print(f"found user agent: {user_agent}")
-                        print(f"ALL HEADERS: {req_headers}")
-                        response = build_response_200(content_type, user_agent)
-                    case "files":
-                        content_type = "application/octet-stream"
-                        file_name = os.path.basename(req_sub_urls[1])
-                        if file_name in files_list:
-                            with open(os.path.join(files_path, file_name), "r") as file:
-                                content = file.read()
-                            response = build_response_200(content_type, content)
-                        else:
-                            response= response_404
-                    case _ :
-                        response = response_404
-            
-            elif req_url == "/":
-                response = response_200
-            else:
-                response = response_404
-        case "POST":
-            if req_sub_urls:
-                match req_sub_urls[0]:
-                    case "files":
-                        file_name = os.path.basename(req_sub_urls[1])
-                        with open(os.path.join(files_path, file_name), "w") as file:
-                            file.write(req_body)
-                        response = response_201
+        match req_method:
+            case "GET":
+                if req_sub_urls:
+                    match req_sub_urls[0]:
+                        case "/" :
+                            response = response_200
+                        case "echo":
+                            content_type = "text/plain"
+                            accepted_encoding_string = req_headers.get("Accept-Encoding", None)
+                            encoding = pick_encoding(accepted_encoding_string) if accepted_encoding_string else None
+                            response = build_response_200(content_type, req_sub_urls[1], encoding)
+                        case "user-agent":
+                            content_type = "text/plain"
+                            user_agent = req_headers.get("User-Agent", None)
+                            print(f"found user agent: {user_agent}")
+                            print(f"ALL HEADERS: {req_headers}")
+                            response = build_response_200(content_type, user_agent)
+                        case "files":
+                            content_type = "application/octet-stream"
+                            file_name = os.path.basename(req_sub_urls[1])
+                            if file_name in files_list:
+                                with open(os.path.join(files_path, file_name), "r") as file:
+                                    content = file.read()
+                                response = build_response_200(content_type, content)
+                            else:
+                                response= response_404
+                        case _ :
+                            response = response_404
+                
+                elif req_url == "/":
+                    response = response_200
+                else:
+                    response = response_404
+            case "POST":
+                if req_sub_urls:
+                    match req_sub_urls[0]:
+                        case "files":
+                            file_name = os.path.basename(req_sub_urls[1])
+                            with open(os.path.join(files_path, file_name), "w") as file:
+                                file.write(req_body)
+                            response = response_201
 
-    print(f"SENDING RESPONSE: {response}")
-    client_socket.send(response)
+        print(f"SENDING RESPONSE: {response}")
+        client_socket.send(response)
 
-    if req_headers.get("Connection", None) == "close":
-        client_socket.close()
+        if req_headers.get("Connection", None) == "close":
+            break
+
+    client_socket.close()
 
 
 def main():
