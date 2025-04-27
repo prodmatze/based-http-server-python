@@ -1,15 +1,13 @@
-import socket  # noqa: F401
+import socket
 import threading
 import os
 import os.path
 import random
 import gzip
 
-try:
-    files_path = "/tmp/data/codecrafters.io/http-server-tester/"
-    files_list = os.listdir(files_path)
-except FileNotFoundError:
-    print("dont need the files here lol")
+from request_parser import Request
+
+files_path = "/tmp/data/codecrafters.io/http-server-tester/"
 
 accepted_encodings_list = ["gzip"]
 
@@ -40,62 +38,70 @@ def build_response_200(content_type, content, encoding = None):
 
     return headers.encode("utf-8") + content
 
-    
-
-
-
-
 
 def handle_request(client_socket, client_address):
+    
+    #moved here to be able to serve files dynamically, even after server has already started
+    try:
+        files_list = os.listdir(files_path)
+    except FileNotFoundError:
+        print("who needs files anyways:")
+
     req_msg = client_socket.recv(1024)
     print(f"Client sent req_msg: {req_msg}")
 
-    request_method = get_request_method(req_msg)
-    request_body = get_request_body(req_msg)
+    request = Request(req_msg) #parsed request object
 
-    print(f"REQUEST TYPE: {request_method}")
+    print(f"REQUEST TYPE: {request.method}")
 
-    url = get_url_from_get_request(req_msg)
-    sub_urls = get_sub_urls(url)
+    req_method = request.method
+    req_url = request.url
+    req_sub_urls = request.sub_urls
+    req_headers = request.headers
+
+    req_body = request.body
+
 
     response = None
 
-    match request_method:
+    match req_method:
         case "GET":
-            if sub_urls:
-                match sub_urls[0]:
+            if req_sub_urls:
+                match req_sub_urls[0]:
                     case "/" :
                         response = response_200
                     case "echo":
                         content_type = "text/plain"
-                        accepted_encoding_string = get_header_value_from_request(req_msg, "Accept-Encoding:")
+                        accepted_encoding_string = req_headers.get("Accept-Encoding", None)
                         encoding = pick_encoding(accepted_encoding_string) if accepted_encoding_string else None
-                        response = build_response_200(content_type, sub_urls[1], encoding)
+                        response = build_response_200(content_type, req_sub_urls[1], encoding)
                     case "user-agent":
                         content_type = "text/plain"
-                        user_agent = get_header_value_from_request(req_msg, "User-Agent:")
+                        user_agent = req_headers.get("User-Agent", None)
                         response = build_response_200(content_type, user_agent)
                     case "files":
                         content_type = "application/octet-stream"
-                        file_name = os.path.basename(sub_urls[1])
+                        file_name = os.path.basename(req_sub_urls[1])
                         if file_name in files_list:
-                            content = open(os.path.join(files_path, file_name), "r").read()
+                            with open(os.path.join(files_path, file_name), "r") as file:
+                                content = file.read()
                             response = build_response_200(content_type, content)
                         else:
                             response = response_404
                     case _ :
                         response = response_404
             
-            elif url == "/":
+            elif req_url == "/":
                 response = response_200
             else:
                 response = response_404
         case "POST":
-            if sub_urls:
-                match sub_urls[0]:
+            if req_sub_urls:
+                match req_sub_urls[0]:
                     case "files":
-                        file_name = os.path.basename(sub_urls[1])
-                        open(os.path.join(files_path, file_name), "w").write(request_body)
+                        file_name = os.path.basename(req_sub_urls[1])
+                        with open(os.path.join(files_path, file_name), "w") as file:
+                            file.write(req_body)
                         response = response_201
 
     print(f"SENDING RESPONSE: {response}")
@@ -120,44 +126,6 @@ def main():
         thread.start()
 
         
-def get_url_from_get_request(request):
-    request_string = request.decode("utf-8")
-    request_string_split_0 = request_string.split(" ", 1)
-
-    request_string_split_1 = request_string_split_0[1].split("HTTP/1.1")
-
-    url = request_string_split_1[0].strip()
-    print(f"Extracted URL: {url} from request!")
-    
-    return url
-
-def get_sub_urls(url):
-    endpoints = [e for e in url.split("/") if e]
-    return endpoints
-
-def get_header_value_from_request(request, header_key):
-    request_string = request.decode("utf-8")
-
-    header_value = None
-    for line in request_string.split("\r\n"):
-        if line.startswith(header_key):
-            header_value = line.split(header_key, 1)[1].strip()
-
-            return header_value
-
-    return None
-
-def get_request_method(request):
-    request_string = request.decode("utf-8")
-    request_method = request_string.split(" ", 1)[0].strip()
-
-    return request_method
-
-def get_request_body(request):
-    request_string = request.decode("utf-8")
-    request_body = request_string.split("\r\n")[-1].strip()
-
-    return request_body
 
 def pick_encoding(accepted_encodings_string):
     accepted_encodings = accepted_encodings_string.split(", ")
