@@ -111,6 +111,8 @@ def handle_request(client_socket, client_address):
     client_socket.send(response)
 
     if req_headers.get("Connection", None) == "close":
+        print(f"RECIEVED CLOSING HEADER: {req_headers.get("Connection", None)}")
+        print(f"CLOSING CONNECTION")
         client_socket.close()
 
 
