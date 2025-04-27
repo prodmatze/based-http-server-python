@@ -106,7 +106,9 @@ def handle_request(client_socket, client_address):
 
     print(f"SENDING RESPONSE: {response}")
     client_socket.send(response)
-    client_socket.close()
+
+    if req_headers.get("Connection", None) == "close":
+        client_socket.close()
 
 
 def main():
