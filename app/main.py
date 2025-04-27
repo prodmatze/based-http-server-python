@@ -3,6 +3,7 @@ import threading
 import os
 import os.path
 import random
+import gzip
 
 try:
     files_path = "/tmp/data/codecrafters.io/http-server-tester/"
@@ -19,6 +20,9 @@ response_404 = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
 
 def build_response_200(content_type, content, encoding = None):
+    if encoding == "gzip":
+        content = gzip.compress(content)
+
     content_length = len(content)
 
     encoding_line = "\r\n"
