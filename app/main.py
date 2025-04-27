@@ -70,7 +70,9 @@ def handle_request(client_socket, client_address):
 
         req_body = request.body
 
-        req_encoding = request.headers.get("Accept-Encoding", None)
+        req_accepted_encodings = request.headers.get("Accept-Encoding", None)
+        encoding = pick_encoding(req_accepted_encodings)
+
         req_connection = request.headers.get("Connection", None)
 
 
@@ -86,20 +88,20 @@ def handle_request(client_socket, client_address):
                             content_type = "text/plain"
                             accepted_encoding_string = req_headers.get("Accept-Encoding", None)
                             encoding = pick_encoding(accepted_encoding_string) if accepted_encoding_string else None
-                            response = build_response_200(content_type, req_sub_urls[1], req_encoding, req_connection)
+                            response = build_response_200(content_type, req_sub_urls[1], encoding, req_connection)
                         case "user-agent":
                             content_type = "text/plain"
                             user_agent = req_headers.get("User-Agent", None)
                             print(f"found user agent: {user_agent}")
                             print(f"ALL HEADERS: {req_headers}")
-                            response = build_response_200(content_type, user_agent, req_encoding, req_connection)
+                            response = build_response_200(content_type, user_agent, encoding, req_connection)
                         case "files":
                             content_type = "application/octet-stream"
                             file_name = os.path.basename(req_sub_urls[1])
                             if file_name in files_list:
                                 with open(os.path.join(files_path, file_name), "r") as file:
                                     content = file.read()
-                                response = build_response_200(content_type, content, req_encoding, req_connection)
+                                response = build_response_200(content_type, content, encoding, req_connection)
                             else:
                                 response= response_404
                         case _ :
