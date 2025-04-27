@@ -5,8 +5,8 @@ import os.path
 import random
 import gzip
 
-from app.request_parser import Request
-#from request_parser import Request
+#from app.request_parser import Request
+from request_parser import Request
 
 files_path = "/tmp/data/codecrafters.io/http-server-tester/"
 
@@ -48,7 +48,12 @@ def handle_request(client_socket, client_address):
     except FileNotFoundError:
         print("who needs files anyways:")
 
-    req_msg = client_socket.recv(1024)
+    while True:
+        req_msg = client_socket.recv(1024)
+
+        if not req_msg:
+            break
+
     print(f"Client sent req_msg: {req_msg}")
 
     request = Request(req_msg) #parsed request object
@@ -90,7 +95,7 @@ def handle_request(client_socket, client_address):
                                 content = file.read()
                             response = build_response_200(content_type, content)
                         else:
-                            response = response_404
+                            response= response_404
                     case _ :
                         response = response_404
             
@@ -111,8 +116,6 @@ def handle_request(client_socket, client_address):
     client_socket.send(response)
 
     if req_headers.get("Connection", None) == "close":
-        print(f"RECIEVED CLOSING HEADER: {req_headers.get("Connection", None)}")
-        print(f"CLOSING CONNECTION")
         client_socket.close()
 
 
