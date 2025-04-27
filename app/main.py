@@ -21,22 +21,29 @@ response_404 = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
 def build_response_200(content_type, content, encoding = None):
     if encoding == "gzip":
-        content = gzip.compress(content.encode()).decode()
+        content = gzip.compress(content.encode())
+    else:
+        content = content.encode()
 
     content_length = len(content)
 
-    encoding_line = "\r\n"
-    if encoding:
-        encoding_line = f"\r\nContent-Encoding: {encoding}\r\n"
-
-
-    return (
+    headers = (
         f"HTTP/1.1 200 OK"
-        f"{encoding_line}"
         f"Content-Type: {content_type}\r\n"
-        f"Content-Length: {content_length}"
-        f"\r\n\r\n{content}"
-    ).encode("utf-8")
+        f"Content-Length: {content_length}\r\n"
+    )
+    
+    if encoding:
+        headers += f"Content-Encoding: {encoding}\r\n"
+
+    headers += "\r\n"
+
+    return headers.encode("utf-8") + content
+
+    
+
+
+
 
 
 def handle_request(client_socket, client_address):
