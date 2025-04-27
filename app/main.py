@@ -21,7 +21,7 @@ response_404 = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
 def build_response_200(content_type, content, encoding = None):
     if encoding == "gzip":
-        content = gzip.compress(content.encode())
+        content = gzip.compress(content.encode()).decode()
 
     content_length = len(content)
 
