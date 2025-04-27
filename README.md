@@ -22,7 +22,7 @@ This project is a fully working HTTP/1.1 server built from scratch using only Py
 ```bash
 # Clone this repository
 git clone https://github.com/prodmatze/based-http-server-python.git
-cd your-repo-name
+cd based-http-server-python
 
 # Run the server
 python3 app/main.py
