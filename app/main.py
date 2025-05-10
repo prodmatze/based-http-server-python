@@ -111,6 +111,8 @@ def handle_request(client_socket, client_address):
                     response = response_200
                 else:
                     response = response_404
+
+            #TODO: implement checks for filepath, currently path traversal attacks are possible ...use os.path.abspath()
             case "POST":
                 if req_sub_urls:
                     match req_sub_urls[0]:
@@ -147,6 +149,7 @@ def main():
 
         
 
+#TODO: implement more robust encoding strategy, currently encoding is just random lol
 def pick_encoding(accepted_encodings_string):
     accepted_encodings = accepted_encodings_string.split(", ")
     available_encodings = []

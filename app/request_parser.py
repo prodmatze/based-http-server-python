@@ -44,6 +44,7 @@ class Request:
 
         return headers
 
+    #TODO: currently only grabs the last line of the body, breaks if body is more than one line
     def get_request_body(self):
         request_body = self.text.split("\r\n")[-1].strip()
 
