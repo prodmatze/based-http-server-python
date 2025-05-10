@@ -46,6 +46,7 @@ def build_response_200(content_type, content, encoding = None, connection = None
     return headers.encode("utf-8") + content
 
 
+#TODO: this is doing too much. split into smaller methods, add error handling, wrap socket in "with socket.create..."
 def handle_request(client_socket, client_address):
     
     #moved here to be able to serve files dynamically, even after server has already started
